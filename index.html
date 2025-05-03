@@ -3,607 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Design and Manufacturing Quiz</title>
+    <title>Product Design & Manufacturing Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom styles */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Inter', sans-serif;
         }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        select, button {
-            padding: 10px 15px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            background-color: white;
-            font-size: 16px;
-            margin: 5px 0;
-        }
-        
-        button {
-            background-color: #3498db;
+        .week-button.selected {
+            background-color: #1d4ed8; /* Darker blue */
             color: white;
-            border: none;
+        }
+        input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        /* Add specific styling for the labels containing radios */
+        .option-label {
+             display: flex; /* Use flex to align radio and text */
+             align-items: center; /* Vertically center items */
+             padding: 0.75rem; /* p-3 */
+             border: 1px solid #d1d5db; /* border-gray-300 */
+             border-radius: 0.375rem; /* rounded-md */
+             margin-bottom: 0.75rem; /* space-y-3 equivalent */
+             cursor: pointer;
+             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .option-label:hover {
+            background-color: #f3f4f6; /* hover:bg-gray-100 */
+        }
+        .option-label.selected {
+             border-color: #3b82f6; /* border-blue-500 */
+             background-color: #eff6ff; /* bg-blue-50 */
+        }
+         .option-label.correct {
+            border-color: #16a34a; /* border-green-500 */
+            background-color: #f0fdf4; /* bg-green-50 */
+        }
+        .option-label.incorrect {
+            border-color: #dc2626; /* border-red-600 */
+            background-color: #fef2f2; /* bg-red-50 */
+        }
+        /* Style for the feedback text */
+        #feedback.correct {
+            color: #15803d; /* text-green-700 */
+            font-weight: 600; /* font-semibold */
+        }
+        #feedback.incorrect {
+            color: #b91c1c; /* text-red-700 */
+            font-weight: 600; /* font-semibold */
+        }
+        /* Ensure buttons have good touch target size */
+        .nav-button, .week-button, #submit-button {
+            padding: 0.75rem 1.5rem; /* p-3 equivalent */
+            margin: 0.5rem; /* m-2 equivalent */
+            border-radius: 0.375rem; /* rounded-md */
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
-        
-        button:hover {
-            background-color: #2980b9;
+        /* Disable pointer events on options after selection */
+        .options-disabled .option-label {
+            pointer-events: none;
+            opacity: 0.8;
         }
-        
-        .quiz-container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .question {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .question-text {
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-        
-        .options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        @media (max-width: 600px) {
-            .options {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .option {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .option:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .option.selected {
-            background-color: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-        
-        .option.correct {
-            background-color: #2ecc71;
-            color: white;
-            border-color: #27ae60;
-        }
-        
-        .option.incorrect {
-            background-color: #e74c3c;
-            color: white;
-            border-color: #c0392b;
-        }
-        
-        .results {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .progress {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 16px;
-            color: #7f8c8d;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        
-        .explanation {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
-            font-size: 14px;
-        }
+
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <h1>Product Design and Manufacturing Quiz</h1>
-    
-    <div class="controls">
-        <select id="week-select">
-            <option value="">Select a Week</option>
-            <option value="1">Week 1</option>
-            <option value="2">Week 2</option>
-            <option value="3">Week 3</option>
-            <option value="4">Week 4</option>
-            <option value="5">Week 5</option>
-            <option value="6">Week 6</option>
-            <option value="7">Week 7</option>
-            <option value="8">Week 8</option>
-            <option value="9">Week 9</option>
-            <option value="10">Week 10</option>
-            <option value="11">Week 11</option>
-            <option value="12">Week 12</option>
-        </select>
-        
-        <button id="start-btn">Start Quiz</button>
-        <button id="check-answers" class="hidden">Check Answers</button>
-        <button id="next-btn" class="hidden">Next Question</button>
-        <button id="restart-btn" class="hidden">Restart Quiz</button>
+<body class="bg-gray-100 flex flex-col items-center min-h-screen p-4">
+
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">Product Design & Manufacturing Quiz</h1>
+
+        <div id="week-selection" class="mb-6 text-center">
+            <h2 class="text-xl font-semibold mb-3 text-gray-700">Select Week:</h2>
+            <div class="flex flex-wrap justify-center">
+                </div>
+        </div>
+
+        <div id="quiz-area" class="hidden">
+            <h2 id="week-title" class="text-xl font-semibold mb-4 text-center text-blue-700"></h2>
+            <div id="question-container" class="mb-4 p-4 border border-gray-200 rounded-md bg-gray-50">
+                <p id="question-text" class="text-lg font-medium text-gray-900 mb-4"></p>
+                <div id="options-container" class="space-y-0"> </div>
+                 <div id="feedback" class="mt-4 text-sm font-medium h-6"></div> </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <button id="prev-button" class="nav-button bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+                <span id="question-counter" class="text-gray-600 font-medium">Question x of y</span>
+                <button id="next-button" class="nav-button bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+            </div>
+
+            <div class="text-center mt-6">
+                <button id="submit-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md hidden">Submit Week</button>
+            </div>
+        </div>
+
+        <div id="results-area" class="hidden mt-6 p-6 border border-green-300 rounded-md bg-green-50 text-center">
+            <h2 class="text-2xl font-semibold text-green-800 mb-3">Week Complete!</h2>
+            <p id="score" class="text-xl text-gray-700 mb-4"></p>
+            <button id="restart-week-button" class="nav-button bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-md">Try Again</button>
+            <button id="change-week-button" class="nav-button bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-md">Change Week</button>
+        </div>
     </div>
-    
-    <div id="quiz-container" class="quiz-container hidden">
-        <div id="question-container"></div>
-        <div class="progress" id="progress"></div>
-        <div class="results hidden" id="results"></div>
-    </div>
-    
+
     <script>
-        // Quiz data organized by week
+        // --- Quiz Data ---
+        // IMPORTANT: Please update 'correctAnswer' with the correct index (0=a, 1=b, 2=c, 3=d) for each question.
         const quizData = {
-            "1": [
-                {
-                    question: "Which of the following process is currently used in product realization process?",
-                    options: ["Analytical process", "Creative process", "Problem definition", "All of these"],
-                    answer: "All of these",
-                    explanation: "All these processes (analytical, creative, and problem definition) are used in product realization."
-                },
-                {
-                    question: "The extended team of designer and developer of the product is limited and remains small to meet in a conference room.",
-                    options: ["True", "False"],
-                    answer: "False",
-                    explanation: "The extended team is not necessarily small and can include many members beyond just designers and developers."
-                },
-                {
-                    question: "What is another term of products in business?",
-                    options: ["Services", "Goods", "Merchandise", "Raw materials"],
-                    answer: "Goods",
-                    explanation: "In business, products are often referred to as goods."
-                },
-                {
-                    question: "______ is defined as the production activity involving production of large quantity of same kind of product for a long period of time.",
-                    options: ["Mass production", "Manufacturing capability", "Interchangeability", "Product life cycle"],
-                    answer: "Mass production",
-                    explanation: "Mass production involves producing large quantities of the same product over an extended period."
-                },
-                {
-                    question: "Analyzing the problem is the initial step in Krick's problem-solving process.",
-                    options: ["True", "False"],
-                    answer: "False",
-                    explanation: "The initial step in Krick's process is problem definition, not analysis."
-                },
-                {
-                    question: "Which of the following is a disadvantage of evolution in product designing?",
-                    options: ["Unsuitability for mass production", "Difficulty in modification", "Inability to tap new technologies", "All of these"],
-                    answer: "All of these",
-                    explanation: "Evolutionary design can have all these disadvantages compared to revolutionary approaches."
-                },
-                {
-                    question: "What is the association between design and manufacturing functions often referred to as?",
-                    options: ["Sequential Engineering", "Consecutive Engineering", "Simultaneous Engineering", "Isolated Engineering"],
-                    answer: "Simultaneous Engineering",
-                    explanation: "The close association between design and manufacturing is called Simultaneous Engineering."
-                },
-                {
-                    question: "______ largely pushes the decision of product development to be made quickly without having detailed information?",
-                    options: ["Economics", "Time pressure", "Dynamics", "Trade-off"],
-                    answer: "Time pressure",
-                    explanation: "Time pressure often forces quick decisions without complete information."
-                },
-                {
-                    question: "Interchangeability ensures that parts can be replaced without any fitting adjustments.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "This is the definition of interchangeability in manufacturing."
-                },
-                {
-                    question: "What happens to the existing product when competitive products appear in market during the product life cycle?",
-                    options: ["Sales decline", "Profits grows", "Maturity period extends", "Exponential growth"],
-                    answer: "Sales decline",
-                    explanation: "Competition typically leads to declining sales of the existing product."
-                }
+             1: [ // Week 1
+                { question: "___ is a systematic, creative and iterative process that results in developing components and systems in Product Realization Process.", options: ["Problem Definition", "Engineering Design", "Analytical Process", "Creative Process"], correctAnswer: 1 },
+                { question: "Which team of designer and developer of product can expand up to dozens, hundreds or even thousands of teammates having a common goal?", options: ["Core team", "Extended team", "External team", "None of these"], correctAnswer: 1 },
+                { question: "The DFM concept includes careful and organized study of all the various issues and mandates the integration of all the relevant data.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Interchangeability is a process of ensuring that manufactured parts should be within a specific ___", options: ["color range", "tolerance limit", "weight category", "temperature range"], correctAnswer: 1 },
+                { question: "What is the third phase in the S curve?", options: ["Slow growth phase", "Rapid growth phase", "Leveling off phase", "None of these"], correctAnswer: 2 },
+                { question: "Formulating the problem is the last step in Krick's basic engineering problem-solving process.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "What is considered most crucial for consumer faith in a product, according to the information provided?", options: ["Brand reputation", "Limited functionality", "Unsatisfactory performance", "Functionality and performance"], correctAnswer: 3 },
+                { question: "Production-consumption cycle is one of the most important features of socio-ecological system.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which of the following is an example of mass production?", options: ["Customized furniture", "Handmade crafts", "Manufacturing smartphones", "One-of-a-kind artwork"], correctAnswer: 2 },
+                { question: "After a maturity period, the product is characterized by a growth in sales and profits only.", options: ["True", "False"], correctAnswer: 1 },
             ],
-            "2": [
-                {
-                    question: "A target value for each parameter is set based on its importance and competitor's product.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "Target values consider both the parameter's importance and competitor benchmarks."
-                },
-                {
-                    question: "What is the recommended balance for performance specifications while establishing functions in Engineering Design?",
-                    options: ["They should not be extremely narrow", "They should be extremely broad", "They should not be narrow nor broad", "None of these"],
-                    answer: "They should not be narrow nor broad",
-                    explanation: "Performance specifications should be balanced - neither too narrow nor too broad."
-                },
-                {
-                    question: "Which of the following is not an attribute of successful product development?",
-                    options: ["Cost", "Value", "Distinctiveness", "Time"],
-                    answer: "Time",
-                    explanation: "While time is important, it's not typically considered a product attribute like cost, value, or distinctiveness."
-                },
-                {
-                    question: "Operational aspects are often multiple, and usage of the product can be left to the customer's choice.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "Products often have multiple operational aspects that customers can choose between."
-                },
-                {
-                    question: "______ is defined as the length of the service life or endurance of the product.",
-                    options: ["Quality", "Dependability", "Durability", "None of these"],
-                    answer: "Durability",
-                    explanation: "Durability refers to how long a product lasts in service."
-                },
-                {
-                    question: "Quality is an attribute that can be defined by two major factors:",
-                    options: ["Durability and dependability", "Durability and cost", "Dependability and cost", "Cost and function"],
-                    answer: "Durability and dependability",
-                    explanation: "Quality is often defined by how long a product lasts (durability) and how reliably it performs (dependability)."
-                },
-                {
-                    question: "A product has certain properties like intrinsic, extrinsic, and physical form.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "Products do have these different types of properties."
-                },
-                {
-                    question: "One way of generating performance specification while establishing functions in engineering design is through:",
-                    options: ["Scree Plot", "House of Quality", "Design of Experiments", "Gantt chart"],
-                    answer: "House of Quality",
-                    explanation: "The House of Quality is a key tool in Quality Function Deployment for establishing specifications."
-                },
-                {
-                    question: "After completion of functional analysis in developing provisional designs, one must develop a matrix of sub functions as rows and possible solutions as columns.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "This matrix is a common step in design methodology."
-                },
-                {
-                    question: "In Design Thinking, which phase follows 'ideation'?",
-                    options: ["Define", "Test", "Prototype", "Empathize"],
-                    answer: "Prototype",
-                    explanation: "The standard Design Thinking process goes: Empathize, Define, Ideate, Prototype, Test."
-                }
+            2: [ // Week 2
+                { question: "A ___ is the identification of the need that is unfulfilled.", options: ["product", "problem", "weight", "value"], correctAnswer: 1 },
+                { question: "The morphology of design is the study of the chronological structure of design projects.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which is the third process in the production-consumption cycle?", options: ["Transportation", "Consumption", "Planning", "Designing"], correctAnswer: 1 },
+                { question: "What are the key factors of successful products in product development?", options: ["Distinctiveness", "Customer focus and market orientation", "Preparedness", "All of these"], correctAnswer: 3 },
+                { question: "An aspect of durability is maintenance and repair.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which key factor develops an intensive understanding of the trait of the market.", options: ["Customer focus and market orientation", "Preparedness", "Distinctiveness", "Time"], correctAnswer: 0 },
+                { question: "What is the fourth process in the product-consumption cycle of morphology of design?", options: ["Design for safety", "Disposal of the retired product", "Planning the warehouse systems", "Finding design alternative"], correctAnswer: 1 },
+                { question: "The cost analysis is done to analyze the achievements of the product.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "In developing provisional designs, innovative ideas generated through imagination or through real life is called as:", options: ["Direct analogy", "Symbolic analogies", "Fantasy analogies", "Indirect analogies"], correctAnswer: 2 },
+                { question: "Which of the following factors is not included in the design for consumption?", options: ["Designing to reduce the rate of obsolescence", "Design for operational economy", "Design for reliability", "Design for safety"], correctAnswer: 0 },
             ],
-            "3": [
-                {
-                    question: "Which factor is not mentioned as affecting Aesthetic Design?",
-                    options: ["Forms/shapes", "Material strength", "Proportions", "Colors"],
-                    answer: "Material strength",
-                    explanation: "While material strength is important for function, it's not typically considered an aesthetic factor."
-                },
-                {
-                    question: "Basic elements of visual design are form, content, arrangement, light and color.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "These are indeed the fundamental elements of visual design."
-                },
-                {
-                    question: "What is a 'tint' in the context of color?",
-                    options: ["A hue with added black", "A hue with added white", "A hue with added complement", "A pure hue without any additions"],
-                    answer: "A hue with added white",
-                    explanation: "A tint is created by adding white to a base hue."
-                },
-                {
-                    question: "Which type of design utilizes shapes found in nature?",
-                    options: ["Geometric", "Natural", "Abstract", "None of these"],
-                    answer: "Natural",
-                    explanation: "Natural design incorporates organic shapes found in nature."
-                },
-                {
-                    question: "Creating contrast is not a consideration when adjusting size in the perception aspect.",
-                    options: ["True", "False"],
-                    answer: "False",
-                    explanation: "Contrast is an important consideration when working with size in design."
-                },
-                {
-                    question: "Which type of balance is created through a/an axis-point/visual-centre/balance-centre?",
-                    options: ["Symmetric balance", "Asymmetric balance", "Radial balance", "None of these"],
-                    answer: "Radial balance",
-                    explanation: "Radial balance is organized around a central point."
-                },
-                {
-                    question: "______ is a process of creating non-identical instances by adjusting attributes.",
-                    options: ["Variation", "Pattern", "Repetition", "None of these"],
-                    answer: "Variation",
-                    explanation: "Variation involves creating similar but not identical elements."
-                },
-                {
-                    question: "What is the primary goal of emphasis in design?",
-                    options: ["Achieving a monochromatic look", "Creating a balance series of emphases", "Using all available colors", "Minimizing contrast"],
-                    answer: "Creating a balance series of emphases",
-                    explanation: "Emphasis creates focal points while maintaining overall balance."
-                },
-                {
-                    question: "Inclined lines and curves are used to generate a unity concept in the form of shapes of the product.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "These design elements can indeed create a sense of unity."
-                },
-                {
-                    question: "What suggests the concept 'NO ART for ART SAKE'?",
-                    options: ["Variety", "Function", "Unity", "None of these"],
-                    answer: "Function",
-                    explanation: "This concept emphasizes that design should prioritize function over pure aesthetics."
-                }
+            3: [ // Week 3
+                { question: "Which design principle involves the application of phi and fractals in aesthetic design?", options: ["Forms/shapes", "Material strength", "Proportions", "Colors"], correctAnswer: 2 },
+                { question: "The psychological impact of a line is not influenced by its direction and weight.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "Which term refers to a hue with added black?", options: ["Tint", "Tone", "Shade", "Complement"], correctAnswer: 2 },
+                { question: "What is the most common characteristic of neutral colors in terms of representation using hue?", options: ["Exciting", "Calming", "Unifying", "Mixed cool/warm"], correctAnswer: 2 },
+                { question: "Feeling of strength and weight of size is associated with the illusion of depth.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "How many kinds of visual designs are there in balance?", options: ["Four", "Two", "Three", "Five"], correctAnswer: 1 },
+                { question: "In the context of design, ratio majorly defines the overall ___ with respect to its surroundings.", options: ["size", "weight", "mass", "space"], correctAnswer: 0 },
+                { question: "___ is the variation of the duration of sounds/visual elements or other events over time.", options: ["Harmony", "Rhythm", "Unity", "Belongings"], correctAnswer: 1 },
+                { question: "What are the reasons for the customer purchasing a product?", options: ["The product performs well", "Simple to utilize", "Well-known to them", "All of these"], correctAnswer: 3 },
+                { question: "Product Development groups should make utilization of market studies customer meetings, and conceptualizing.", options: ["True", "False"], correctAnswer: 0 },
             ],
-            "11": [
-                {
-                    question: "What is the primary goal of Computer Integrated Manufacturing (CIM) in manufacturing?",
-                    options: ["Lowering cost", "Improving delivery times", "Enhancing quality", "All of these"],
-                    answer: "All of these",
-                    explanation: "CIM aims to achieve all these benefits simultaneously."
-                },
-                {
-                    question: "Plant layout is the way the equipment is physically arranged in the factory.",
-                    options: ["True", "False"],
-                    answer: "True",
-                    explanation: "This is the definition of plant layout."
-                },
-                {
-                    question: "What is included in the business function of manufacturing support?",
-                    options: ["Research and development", "Process planning", "Sales and marketing", "Quality control"],
-                    answer: "Process planning",
-                    explanation: "Process planning is a core manufacturing support function."
-                },
-                {
-                    question: "Automated machine tools are primarily used for product design in manufacturing.",
-                    options: ["True", "False"],
-                    answer: "False",
-                    explanation: "Automated machine tools are used for production, not design."
-                },
-                {
-                    question: "Which of the following manufacturing industries involve the cultivation and exploitation of natural resources?",
-                    options: ["Secondary industries", "Tertiary industries", "Quaternary industries", "Primary industries"],
-                    answer: "Primary industries",
-                    explanation: "Primary industries deal directly with natural resources."
-                },
-                {
-                    question: "______ involves observing of the product during actual operation or under conditions that might occur during operation.",
-                    options: ["Inspection", "Testing", "Product variety", "None of these"],
-                    answer: "Testing",
-                    explanation: "Testing involves observing products under operational conditions."
-                },
-                {
-                    question: "What does MLT stand for in manufacturing?",
-                    options: ["Manufacturing Lead Time", "Machine Learning Time", "Material Loading Time", "Manufacturing Labor Time"],
-                    answer: "Manufacturing Lead Time",
-                    explanation: "MLT stands for Manufacturing Lead Time, the total time to complete a product."
-                },
-                {
-                    question: "There is a direct relationship between production quantity and product variety in factory operations.",
-                    options: ["True", "False"],
-                    answer: "False",
-                    explanation: "There's typically an inverse relationship - higher quantities usually mean less variety."
-                },
-                {
-                    question: "Which of the following parameters is typically used in mechanical engineering for CAE simulations?",
-                    options: ["Temperature", "Pressure", "Component interactions", "All of these"],
-                    answer: "All of these",
-                    explanation: "CAE simulations can analyze all these mechanical parameters."
-                },
-                {
-                    question: "The set of instructions that controls a machine's actions including speed, feed rate, coolants etc. are called ______.",
-                    options: ["M-code", "G-code", "D-code", "N-code"],
-                    answer: "G-code",
-                    explanation: "G-code is the standard programming language for CNC machines."
-                }
+             4: [ // Week 4
+                { question: "Who is credited with the developing the Function Analysis Technique (FAST) diagramming during the 1960s?", options: ["Mr. Lawrence D. Miles", "Mr. Charles Bytheway", "U.S. Navy Bureau of Ships", "General Service Administration (GSA)"], correctAnswer: 1 },
+                { question: "The Creative phase develops ideas for alternative ways to perform each function selected for further study.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "___ organizes awareness training programs and workshops conducted by Certified Value Specialists?", options: ["INVEST", "QFD", "HOQ", "None of these"], correctAnswer: 0 },
+                { question: "Value Engineering is a problem-solving technique.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Value Analysis (VA)/Value Engineering (VE) is ___ oriented.", options: ["Item", "function", "Cost", "Object"], correctAnswer: 1 },
+                { question: "The Information Phase involves only individual efforts and not teamwork.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "All functions should be classified into two levels of importance, which are:", options: ["Primary and secondary", "Verb and noun", "Internal and external", "Direct and indirect"], correctAnswer: 0 },
+                { question: "Secondary functions support the primary function but do not directly accomplish it.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Functions having VIP Index more than '1' are called as:", options: ["True Value", "Poor Value", "High Value", "Real Value"], correctAnswer: 1 },
+                { question: "The objective of the evaluation phase of the Value Engineering Job Plan is to analyze the result to the creative phase.", options: ["True", "False"], correctAnswer: 0 },
+            ],
+            5: [ // Week 5
+                { question: "Usually screening, ranking, and cost optimization processes are used to arrive at the best combination of materials.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "In ___ process, metal bites are forced by a mechanically or hydraulically actuated ram through a die hole of the desired shape or around a punch.", options: ["Extrusion", "Casting", "Rolling", "3D printing"], correctAnswer: 0 },
+                { question: "___ is a machining process that uses a toothed tool, called a broach, to remove material.", options: ["Broaching", "Shaping", "Planning", "Forging"], correctAnswer: 0 },
+                { question: "The tertiary process of manufacturing consists of finishing processes, such as surface treatments and heat treatments.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "___ involves heating steel and then keeping it at that temperature for a period of time and then cooling it in air.", options: ["Annealing", "Normalizing", "Tempering", "Hardening"], correctAnswer: 1 },
+                { question: "___ consists of finishing processes such as surface treatments and heat treatments.", options: ["Primary process", "Secondary process", "Tertiary process", "None of these"], correctAnswer: 2 },
+                { question: "Facing is a special case of turning in which the major motion is perpendicular to the axis of rotation.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "___ is the difference between the price at which the product is sold and the cost of providing the product.", options: ["Value", "Cost", "Profit", "Design"], correctAnswer: 2 },
+                { question: "Which of the following is an example of hidden cost?", options: ["Product's gain or loss of market share", "Company's stock price changes", "Position in the market for future", "All of these"], correctAnswer: 3 },
+                { question: "Software development is not a consideration in design and development costs.", options: ["True", "False"], correctAnswer: 1 },
+            ],
+             6: [ // Week 6
+                { question: "What is the primary focus of Design for Manufacturing?", options: ["Maximizing part complexity", "Minimizing manufacturing operations", "Increasing part production cost", "Ignoring assembly processes"], correctAnswer: 1 },
+                { question: "Lack of communication between product developers and the related departments is a common problem associated with the implementation of the design review process.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "What is the primary advantage of minimizing the number of components in a product?", options: ["Increased assembly costs", "Improved reliability", "Complex disassembly", "Higher work-in-process"], correctAnswer: 1 },
+                { question: "__________ of a product is a function of design parameters that are both intensive and extensive in nature.", options: ["Assembly", "Marketing", "Supply", "None of these"], correctAnswer: 0 },
+                { question: "A Disassembly Sequence Plan (DSP) uses mathematical techniques such as linear programming, dynamic programming, and graphical tools for disassembly.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "________ consists of assessing the end value to be realized by disassembling the product.", options: ["Assembly analysis", "Product analysis", "Both of these", "None of these"], correctAnswer: 1 },
+                { question: "Predictive maintenance is based on the actual condition of the equipment rather than time or age factors.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which of the following is reason for not implementing DFMA?", options: ["No Time", "Low Assembly Costs", "Low Volume", "All of these"], correctAnswer: 3 },
+                { question: "The goal of Total Productive Maintenance (TPM) is:", options: ["Zero Defects", "Zero Breakdowns", "Zero Accidents", "All of these"], correctAnswer: 3 },
+                { question: "For planning a system review, a reviewer assesses risk levels by examining the firm's compliance with industry regulations.", options: ["True", "False"], correctAnswer: 0 },
+            ],
+            7: [ // Week 7
+                { question: "Xerox’s commitment is to generate waste material that cannot be recycled or remanufactured.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "Which is the technique for assisting management in costing and designing an environmentally effective manufacturing facility.", options: ["Waste reduction", "Life Cycle Analysis", "Regeneration", "Acceptance sampling"], correctAnswer: 1 },
+                { question: "Which factor considers the ease of repairing a product when determining its quality?", options: ["Serviceability", "Aesthetics", "Conformance to Standards", "Features"], correctAnswer: 0 },
+                { question: "Reducing or eliminating waste is not considered an ongoing effort in effective large-volume manufacturing.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "A ________ item is a unit of product that does not satisfy one or more of the specifications of that product.", options: ["Conforming", "Nonconforming", "Both of these", "None of these"], correctAnswer: 1 },
+                { question: "In adjustment chart, what is the process called when EPC is implemented?", options: ["Manual Process Control (MPC)", "Automated Process Control (APC)", "Static Process Control (SPC)", "Dynamic Process Control (DPC)"], correctAnswer: 1 },
+                { question: "In the factorial design, factors are varied together in such a way that all possible combinations of factor levels are tested.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "The control chart should be applied:", options: ["To the control error", "To the sequence of adjustment to the manipulated variables", "Both of these", "None of these"], correctAnswer: 2 },
+                { question: "Which R is called as the golden child in Three R’s?", options: ["Reuse", "Reduce", "Repair", "Recycle"], correctAnswer: 1 },
+                { question: "The third major source of waste is the materials and activities that are part of the value‐added operations and processes used to manufacture the product.", options: ["True", "False"], correctAnswer: 1 },
+            ],
+             8: [ // Week 8
+                { question: "Which type of patent is granted for plant variety made through asexual reproduction of plant varieties?", options: ["Utility patent", "Design patent", "Plant patent", "None of these"], correctAnswer: 2 },
+                { question: "Which approach to problem-solving follows a step-by-step procedure?", options: ["Analytical approach", "Creative approach", "Both of these", "None of these"], correctAnswer: 0 },
+                { question: "Synthesis’ is the step where alternative solutions to problems are generated.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which characteristic involves being open-disapproved versatile in the approach to an issue?", options: ["Availability", "Flexibility", "Originality", "Problem security"], correctAnswer: 1 },
+                { question: "What term is used for the intersection of a column and a row in a morphological box?", options: ["Morphological field", "Dimension", "Parameter", "Value"], correctAnswer: 0 },
+                { question: "The solution space is derived through the process of cross-consistency assessment.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which method emphasizes innovation with an open mindset and starting from scratch?", options: ["Globalization", "Clean slate approach", "Complexity", "Traditionalism"], correctAnswer: 1 },
+                { question: "Which of the following is upstream input in Value Chain Model of Frugal Innovation?", options: ["Capital", "Skills", "Labor", "All of these"], correctAnswer: 3 },
+                { question: "The Delphi method helps the group reach consensus without the influence of strong members of the group.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which of the following ‘blocks to creativity’ believes that all indulgence in fantasy is a waste of time.", options: ["Cultural block", "Emotional block", "Perceptual block", "None of these"], correctAnswer: 1 },
+            ],
+             9: [ // Week 9
+                { question: "Most Additive Manufacturing machines employ a layer-based approach.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "What is the essential displaying system accessible to make 3D outlines?", options: ["Wireframe", "Surface", "Solid Modelling", "All of these"], correctAnswer: 3 },
+                { question: "In which modeling techniques the geometrical database is wealthier and give data on surface associating model edges?", options: ["Surface modeling", "Wireframe modeling", "Solid modeling", "Geometric modeling"], correctAnswer: 0 },
+                { question: "What is the primary focus of part building in Rapid Prototyping?", options: ["Manual adjustment", "Automated processes", "Crafting", "Hand-held process"], correctAnswer: 1 },
+                { question: "The 3DW process relies on cut CAD files for building models.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "In______, a surge of liquid material is shot out from a sprout?", options: ["Holographic Interference Solidification", "Ballistic Particle Manufacture", "Solid Ground Curing", "Beam Interference Solidification"], correctAnswer: 1 },
+                { question: "In FDM, what is the material extrusion rate typically dependent upon?", options: ["Nozzle color", "Nozzle temperature", "Nozzle speed", "Nozzle size"], correctAnswer: 2 },
+                { question: "A MJM machine constructs models utilizing a stage change printing yet connected in three measurements.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "What is the purpose of the excess material in LOM and PLT during the build process?", options: ["It forms the final part", "Acts as a support structure", "Enhances UV lights exposure", "Provides color variation"], correctAnswer: 1 },
+                { question: "Stereolithography (SL), depends on a photosensitive fluid sap which shapes a strong polymer when presented to bright (UV) light.", options: ["True", "False"], correctAnswer: 0 },
+            ],
+            10: [ // Week 10
+                { question: "A plant layout study is unnecessary when setting up a new plant.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "Which of the following factors in plant layout design is associated with the attributes of product such as size, shape and weight?", options: ["Intricacy of the product", "Processing time", "Production volume of the product", "Product physical characteristics"], correctAnswer: 3 },
+                { question: "Which of the following is an advantage of process or functional layout?", options: ["Flexibility", "Cost", "Motivation", "All of these"], correctAnswer: 3 },
+                { question: "In functional layout, since there are various machines accessible it does not exhibit much equipment failure.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "________ layout is suggested for an item that is too overwhelming to move.", options: ["Fixed-position", "Cellular", "Product", "None of these"], correctAnswer: 0 },
+                { question: "Which of the following is not an advantage of fixed position layout?", options: ["Promotes quality", "Highly flexible", "Space constraint", "Minimum material movement"], correctAnswer: 2 },
+                { question: "What does the ‘travel speed’ setting controls in slicing software mean?", options: ["Regulating filament extrusion speed", "Adjusting the speed between print locations", "Changing layer height", "Enhancing print preview accuracy"], correctAnswer: 1 },
+                { question: "What does the ‘Support Type’ setting in Cura determine?", options: ["Type of material used for support", "Placement of support structures", "Adhesion to the build plate", "Cooling fan speed"], correctAnswer: 1 },
+                { question: "What is the purpose of the TECHB V30's enclosure (if applicable)?", options: ["Enhance aesthetic appeal", "Maintain a controlled printing environment", "Increase print speed", "Improve touchscreen responsiveness"], correctAnswer: 1 },
+                { question: "Product layouts are flexible and can react to changes in items or process plan.", options: ["True", "False"], correctAnswer: 1 },
+            ],
+            11: [ // Week 11
+                { question: "Which CIM component is associated with the design of products using computer technology?", options: ["CAM", "CAPP", "CAD", "CNC"], correctAnswer: 2 },
+                { question: "Which of the following is not a component of manufacturing facilities?", options: ["Production line", "Stand-alone workstation and worker", "Plant layout", "Marketing strategies"], correctAnswer: 3 },
+                { question: "Cost accounting is a part of manufacturing control function in manufacturing support.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "Which type of manufacturing system is most suitable for batch production?", options: ["Fixed automation", "Programmable automation", "Flexible automation", "Customer-engineering automation"], correctAnswer: 1 },
+                { question: "Which of the following activities is carried out in manufacturing of discrete products?", options: ["Material handling", "Inspection and testing", "Coordination and control", "All of these"], correctAnswer: 3 },
+                { question: "Agriculture and mining are examples of tertiary industries in manufacturing.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "What term refers to the number of different products or part designs produced in a plant?", options: ["Production complexity", "Product diversity", "Variety reduction", "Product variety"], correctAnswer: 3 },
+                { question: "___________ is defined as the portion of time a productive resource is used relative to the time available under the definition of plant capacity.", options: ["Work-in-process", "Utilization", "Automation", "Plant variety"], correctAnswer: 1 },
+                { question: "In a closed-loop control system, the output variable is not compared with an input parameter.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "In which of the following level of automation CNC machine tools and similar production equipment, industrial robots, material handling equipment can be done.", options: ["Machine level", "Plant level", "Device level", "Enterprise level"], correctAnswer: 0 },
+            ],
+             12: [ // Week 12
+                { question: "Which of the following processes involve obtaining a geometric CAD model from scanned 3D points?", options: ["Forward engineering", "Reverse engineering", "Digital engineering", "Rapid prototyping"], correctAnswer: 1 },
+                { question: "The prototype is developed before the creation of a CAD model in the reverse engineering process.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "What is the first fundamental step in which the acquired image is created in the software as a set of points?", options: ["Mesh Generation", "Alignment", "Post processing", "Acquisition"], correctAnswer: 3 },
+                { question: "The mesh generation converts a set of 3D points to data constituted by a set of triangles.", options: ["True", "False"], correctAnswer: 0 },
+                { question: "When data is generated by RE hardware, what does RE software turns it into?", options: ["2D cross-sectional images", "3D geometric models", "Rapid prototyping models", "Destructive models"], correctAnswer: 1 },
+                { question: "What is the primary limitation of Coordinate Measuring Machine (CMM) in digitizing complex surfaces?", options: ["Lack of scanning speed", "Lack or accuracy", "Lack of number DOF", "Lack of continuous deflection output"], correctAnswer: 0 },
+                { question: "Commercial software is not involved in point processing tasks in RE.", options: ["True", "False"], correctAnswer: 1 },
+                { question: "Which of the following is not an advantage of non-contact mode of RE?", options: ["No physical contact", "Inability to detect colors", "Good accuracy and resolution", "Fast digitizing of substantial volumes"], correctAnswer: 1 },
+                { question: "________ benchmarking examines how companies compete and is ideal for corporations with a long-term perspective.", options: ["Performance", "Strategic", "Process", "None of these"], correctAnswer: 1 },
+                { question: "Performance metrics in benchmarking gives numerical standards against which a client’s own processes can be compared.", options: ["True", "False"], correctAnswer: 0 },
             ]
-            // Additional weeks can be added here following the same pattern
         };
 
-        // DOM elements
-        const weekSelect = document.getElementById('week-select');
-        const startBtn = document.getElementById('start-btn');
-        const checkAnswersBtn = document.getElementById('check-answers');
-        const nextBtn = document.getElementById('next-btn');
-        const restartBtn = document.getElementById('restart-btn');
-        const quizContainer = document.getElementById('quiz-container');
-        const questionContainer = document.getElementById('question-container');
-        const progressElement = document.getElementById('progress');
-        const resultsElement = document.getElementById('results');
+        // --- DOM Elements ---
+        const weekSelectionDiv = document.getElementById('week-selection');
+        const weekButtonsContainer = weekSelectionDiv.querySelector('.flex-wrap');
+        const quizAreaDiv = document.getElementById('quiz-area');
+        const resultsAreaDiv = document.getElementById('results-area');
+        const weekTitleH2 = document.getElementById('week-title');
+        const questionContainerDiv = document.getElementById('question-container');
+        const questionTextP = document.getElementById('question-text');
+        const optionsContainerDiv = document.getElementById('options-container');
+        const feedbackDiv = document.getElementById('feedback');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const questionCounterSpan = document.getElementById('question-counter');
+        const submitButton = document.getElementById('submit-button');
+        const scoreP = document.getElementById('score');
+        const restartWeekButton = document.getElementById('restart-week-button');
+        const changeWeekButton = document.getElementById('change-week-button');
 
-        // Quiz state variables
-        let currentWeek = '';
-        let currentQuestions = [];
+        // --- State Variables ---
+        let currentWeek = null;
         let currentQuestionIndex = 0;
-        let score = 0;
-        let userAnswers = [];
+        let weeklyQuestions = [];
+        let userAnswers = []; // Stores user's selected answer index for each question
+        let score = 0; // Keep track of score as questions are answered
 
-        // Event listeners
-        startBtn.addEventListener('click', startQuiz);
-        checkAnswersBtn.addEventListener('click', checkAnswers);
-        nextBtn.addEventListener('click', nextQuestion);
-        restartBtn.addEventListener('click', restartQuiz);
+        // --- Functions ---
 
-        // Start the quiz
-        function startQuiz() {
-            currentWeek = weekSelect.value;
-            
-            if (!currentWeek) {
-                alert('Please select a week first!');
-                return;
-            }
-            
-            // Get questions for selected week
-            currentQuestions = quizData[currentWeek];
-            if (!currentQuestions || currentQuestions.length === 0) {
-                alert('No questions available for this week yet!');
-                return;
-            }
-            
-            // Reset quiz state
+        // Generate week selection buttons
+        function generateWeekButtons() {
+            weekButtonsContainer.innerHTML = '';
+            Object.keys(quizData).forEach(weekNum => {
+                const button = document.createElement('button');
+                button.textContent = `Week ${weekNum}`;
+                button.classList.add('week-button', 'bg-blue-500', 'hover:bg-blue-600', 'text-white', 'font-medium', 'py-2', 'px-4', 'rounded-md', 'm-1', 'transition', 'duration-150', 'ease-in-out');
+                button.dataset.week = weekNum;
+                button.addEventListener('click', () => selectWeek(weekNum));
+                weekButtonsContainer.appendChild(button);
+            });
+        }
+
+        // Handle week selection
+        function selectWeek(weekNum) {
+            currentWeek = weekNum;
+            weeklyQuestions = quizData[weekNum];
             currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = [];
-            
-            // Show quiz container and first question
-            quizContainer.classList.remove('hidden');
-            checkAnswersBtn.classList.remove('hidden');
-            nextBtn.classList.add('hidden');
-            restartBtn.classList.add('hidden');
-            resultsElement.classList.add('hidden');
-            
-            displayQuestion();
+            userAnswers = new Array(weeklyQuestions.length).fill(null);
+            score = 0; // Reset score for the new week
+
+            // Update UI
+            weekSelectionDiv.classList.add('hidden');
+            resultsAreaDiv.classList.add('hidden');
+            quizAreaDiv.classList.remove('hidden');
+            weekTitleH2.textContent = `Week ${currentWeek} Quiz`;
+
+            document.querySelectorAll('.week-button').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.week === weekNum);
+                btn.classList.toggle('bg-blue-700', btn.dataset.week === weekNum);
+            });
+
+            loadQuestion();
         }
 
-        // Display the current question
-        function displayQuestion() {
-            const question = currentQuestions[currentQuestionIndex];
-            
-            // Create question HTML
-            let questionHTML = `
-                <div class="question">
-                    <div class="question-text">${currentQuestionIndex + 1}. ${question.question}</div>
-                    <div class="options">
-            `;
-            
-            // Add options
-            question.options.forEach((option, index) => {
-                const isSelected = userAnswers[currentQuestionIndex] === index;
-                questionHTML += `
-                    <div class="option ${isSelected ? 'selected' : ''}" data-index="${index}">
-                        ${String.fromCharCode(97 + index)}) ${option}
-                    </div>
-                `;
-            });
-            
-            questionHTML += `
-                    </div>
-                </div>
-            `;
-            
-            questionContainer.innerHTML = questionHTML;
-            
-            // Add event listeners to options
-            document.querySelectorAll('.option').forEach(option => {
-                option.addEventListener('click', selectOption);
-            });
-            
-            // Update progress
-            progressElement.textContent = `Question ${currentQuestionIndex + 1} of ${currentQuestions.length}`;
-        }
+        // Load the current question and options
+        function loadQuestion() {
+            feedbackDiv.textContent = ''; // Clear feedback
+            feedbackDiv.className = 'mt-4 text-sm font-medium h-6'; // Reset feedback class
+            optionsContainerDiv.classList.remove('options-disabled'); // Re-enable options container
 
-        // Handle option selection
-        function selectOption(e) {
-            const selectedIndex = parseInt(e.target.getAttribute('data-index'));
-            
-            // Clear previous selection
-            document.querySelectorAll('.option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            
-            // Mark selected option
-            e.target.classList.add('selected');
-            
-            // Store user's answer
-            userAnswers[currentQuestionIndex] = selectedIndex;
-        }
+            const questionData = weeklyQuestions[currentQuestionIndex];
+            questionTextP.textContent = `${currentQuestionIndex + 1}. ${questionData.question}`;
+            optionsContainerDiv.innerHTML = ''; // Clear previous options
 
-        // Check the user's answer
-        function checkAnswers() {
-            if (typeof userAnswers[currentQuestionIndex] === 'undefined') {
-                alert('Please select an answer!');
-                return;
-            }
-            
-            const question = currentQuestions[currentQuestionIndex];
-            const selectedOptionIndex = userAnswers[currentQuestionIndex];
-            const selectedOption = question.options[selectedOptionIndex];
-            const isCorrect = selectedOption === question.answer;
-            
-            // Display correct/incorrect feedback
-            document.querySelectorAll('.option').forEach(opt => {
-                const optIndex = parseInt(opt.getAttribute('data-index'));
-                const optionText = question.options[optIndex];
-                
-                if (optionText === question.answer) {
-                    opt.classList.add('correct');
-                } else if (optIndex === selectedOptionIndex) {
-                    opt.classList.add('incorrect');
+            questionData.options.forEach((option, index) => {
+                const label = document.createElement('label');
+                label.classList.add('option-label'); // Use the specific class for styling
+                label.dataset.index = index; // Store index on the label
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question${currentQuestionIndex}`;
+                radio.value = index;
+                radio.classList.add('mr-3', 'form-radio', 'h-5', 'w-5', 'text-blue-600', 'focus:ring-blue-500');
+
+                // If an answer was previously selected for this question (e.g., using Prev button)
+                if (userAnswers[currentQuestionIndex] !== null) {
+                     radio.checked = (userAnswers[currentQuestionIndex] === index);
+                     // Show feedback immediately if navigating back to an answered question
+                     showFeedback(userAnswers[currentQuestionIndex]);
+                } else {
+                    // Only add change listener if the question hasn't been answered yet
+                     radio.addEventListener('change', handleAnswerSelection);
                 }
-                
-                opt.style.pointerEvents = 'none'; // Disable further clicks
+
+
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(option));
+                optionsContainerDiv.appendChild(label);
             });
-            
-            // Update score if correct
-            if (isCorrect) {
-                score++;
+
+            updateNavigation();
+        }
+
+        // Handle the user selecting an answer
+        function handleAnswerSelection(event) {
+             const selectedIndex = parseInt(event.target.value);
+             userAnswers[currentQuestionIndex] = selectedIndex; // Store user's selection
+             showFeedback(selectedIndex); // Show correct/incorrect feedback
+        }
+
+        // Show feedback for the selected answer
+         function showFeedback(selectedIndex) {
+            const questionData = weeklyQuestions[currentQuestionIndex];
+            const correctIndex = questionData.correctAnswer;
+            const isCorrect = selectedIndex === correctIndex;
+
+            // Add 'options-disabled' class to prevent further clicks
+            optionsContainerDiv.classList.add('options-disabled');
+
+            // Update feedback text and style
+            feedbackDiv.textContent = isCorrect ? 'Correct!' : 'Incorrect!';
+            feedbackDiv.className = `mt-4 text-sm font-medium h-6 ${isCorrect ? 'correct' : 'incorrect'}`; // Add correct/incorrect class
+
+            // Style the labels
+            const labels = optionsContainerDiv.querySelectorAll('.option-label');
+            labels.forEach(label => {
+                const labelIndex = parseInt(label.dataset.index);
+                 // Highlight the correct answer in green
+                if (labelIndex === correctIndex) {
+                    label.classList.add('correct');
+                }
+                // Highlight the selected answer (red if incorrect, green if correct)
+                if (labelIndex === selectedIndex) {
+                     label.classList.add(isCorrect ? 'correct' : 'incorrect');
+                     // Ensure the radio button itself reflects the selection visually
+                     label.querySelector('input[type="radio"]').checked = true;
+                }
+                 // Disable radio buttons directly as well
+                 label.querySelector('input[type="radio"]').disabled = true;
+            });
+
+
+            // Update score if the answer was correct and hasn't been scored yet
+            // (This check prevents adding score multiple times if user goes back and forth)
+            if (isCorrect && !questionData.scored) {
+                 score++;
+                 questionData.scored = true; // Mark question as scored
+            } else if (!isCorrect) {
+                 // If user changes answer from correct to incorrect via Prev/Next
+                 if (questionData.scored) {
+                     score--; // Decrement score if it was previously correct
+                     questionData.scored = false; // Reset scored status
+                 }
             }
-            
-            // Show explanation
-            const explanationHTML = `<div class="explanation"><strong>Explanation:</strong> ${question.explanation}</div>`;
-            questionContainer.querySelector('.question').innerHTML += explanationHTML;
-            
-            // Show appropriate buttons
-            checkAnswersBtn.classList.add('hidden');
-            
-            if (currentQuestionIndex < currentQuestions.length - 1) {
-                nextBtn.classList.remove('hidden');
-            } else {
-                showResults();
+
+
+            // Enable the Next button or Submit button
+             nextButton.disabled = false;
+             if (currentQuestionIndex === weeklyQuestions.length - 1) {
+                submitButton.disabled = false;
             }
         }
 
-        // Move to next question
+
+        // Update navigation buttons and counter
+        function updateNavigation() {
+            questionCounterSpan.textContent = `Question ${currentQuestionIndex + 1} of ${weeklyQuestions.length}`;
+            prevButton.disabled = currentQuestionIndex === 0;
+
+            // Next button is disabled initially, enabled when an answer is selected
+            // Submit button is shown/enabled only on the last question AFTER it's answered
+            const isLastQuestion = currentQuestionIndex === weeklyQuestions.length - 1;
+            const isAnswered = userAnswers[currentQuestionIndex] !== null;
+
+            nextButton.disabled = !isAnswered || isLastQuestion; // Disabled if not answered OR if last question
+            nextButton.classList.toggle('hidden', isLastQuestion); // Hide Next on last question
+
+            submitButton.classList.toggle('hidden', !isLastQuestion); // Show Submit only on last question
+            submitButton.disabled = !isAnswered; // Enable Submit only after last question is answered
+
+        }
+
+        // Go to the previous question
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                // Reset scored status for current question before moving back,
+                // allowing score to be decremented if user changes answer later.
+                // weeklyQuestions[currentQuestionIndex].scored = false; // Optional: Reset score status on prev? Decide based on desired logic.
+
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        // Go to the next question
         function nextQuestion() {
-            currentQuestionIndex++;
-            nextBtn.classList.add('hidden');
-            checkAnswersBtn.classList.remove('hidden');
-            displayQuestion();
+            // The check for answered question is now handled by enabling the button in showFeedback
+            if (currentQuestionIndex < weeklyQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
         }
 
-        // Show final results
-        function showResults() {
-            restartBtn.classList.remove('hidden');
-            resultsElement.classList.remove('hidden');
-            resultsElement.textContent = `You scored ${score} out of ${currentQuestions.length} (${Math.round((score / currentQuestions.length) * 100)}%)`;
+        // Submit the quiz (called from Submit button)
+        function submitQuiz() {
+            // Score is already calculated incrementally
+            quizAreaDiv.classList.add('hidden');
+            resultsAreaDiv.classList.remove('hidden');
+            scoreP.textContent = `Your score: ${score} out of ${weeklyQuestions.length}`;
+
+             // Reset scored status for all questions in the completed week for potential retries
+             weeklyQuestions.forEach(q => q.scored = false);
         }
 
-        // Restart the quiz
-        function restartQuiz() {
-            startQuiz();
+        // Go back to week selection
+        function changeWeek() {
+            resultsAreaDiv.classList.add('hidden');
+            weekSelectionDiv.classList.remove('hidden');
+            document.querySelectorAll('.week-button').forEach(btn => {
+                btn.classList.remove('selected', 'bg-blue-700');
+            });
+            currentWeek = null;
         }
+
+
+        // Restart the current week's quiz
+        function restartWeek() {
+            if (currentWeek) {
+                 // Reset scored status before restarting
+                 weeklyQuestions.forEach(q => q.scored = false);
+                 selectWeek(currentWeek); // Reload the current week
+            }
+        }
+
+        // --- Event Listeners ---
+        prevButton.addEventListener('click', prevQuestion);
+        nextButton.addEventListener('click', nextQuestion);
+        submitButton.addEventListener('click', submitQuiz);
+        restartWeekButton.addEventListener('click', restartWeek);
+        changeWeekButton.addEventListener('click', changeWeek);
+
+
+        // --- Initial Setup ---
+        generateWeekButtons(); // Create week buttons on page load
+
     </script>
+
 </body>
 </html>
